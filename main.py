@@ -13,7 +13,7 @@ print("🧠 Bot started — generating betting tickets...")
 
 tips = get_all_predictions()
 if not tips:
-print("⚠️ No predictions fetched — using fallback tips.")
+  print("⚠️ No predictions fetched — using fallback tips.")
 tips = [
 "Over 1.5 – Team A vs Team B",
 "BTTS – Team C vs Team D",
