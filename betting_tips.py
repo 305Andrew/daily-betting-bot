@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 # === Scrape Forebet ===
-def scrape_forebet_predictions():
+def scrape_forebet_predictions():print
     url = "https://www.forebet.com/en/football-predictions-from-yesterday"
     headers = {"User-Agent": "Mozilla/5.0"}
     response = requests.get(url, headers=headers)
@@ -26,7 +26,7 @@ def scrape_forebet_predictions():
     return predictions
 
 # === Combine all prediction sources here ===
-def get_all_predictions():
+def get_all_predictions():print
     return [
         scrape_forebet_predictions(),
         # Add other sites here later like:
