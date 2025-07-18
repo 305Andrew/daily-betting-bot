@@ -1,9 +1,9 @@
 from betting_tips import get_all_predictions
 
-if __name__ == "__main__":
-    print("⏳ Generating betting tickets...")
-    tickets = get_all_predictions()
-    for ticket in tickets:
-        print("\n🎯 BETTING TICKET")
-        for game in ticket:
-            print(f" - {game}") 
+print("Generating betting tickets...\n")
+
+sources = get_all_predictions()
+for i, source in enumerate(sources):
+    print(f"\n🎯 Source {i+1}")
+    for match in source:
+        print(f"• {match}") 
