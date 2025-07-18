@@ -1,99 +1,72 @@
 import requests
 from bs4 import BeautifulSoup
 
-# === FOREBET ===
 def get_forebet_predictions():
-    print("🔍 Fetching from Forebet...")
+    print("Fetching from Forebet...")
+    url = 'https://www.forebet.com/en/football-predictions-from-forebet-today'
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        url = "https://www.forebet.com/en/football-predictions"
-        response = requests.get(url)
+        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
+        rows = soup.select('table.forebet tbody tr')
         tips = []
-        matches = soup.select("div.rcnt > table > tbody > tr")
-        for match in matches[:5]:
-            try:
-                team1 = match.select_one(".homeTeam").text.strip()
-                team2 = match.select_one(".awayTeam").text.strip()
-                prediction = match.select_one(".forepr").text.strip()
-                tips.append(f"{prediction} – {team1} vs {team2}")
-            except:
-                continue
-        print(f"✅ Got {len(tips)} tips from Forebet")
+        for row in rows[:5]:  # Limit to 5 matches
+            teams = row.select_one('td.tnms a')
+            prediction = row.select_one('td.forepr')
+            if teams and prediction:
+                match = teams.text.strip()
+                tip = prediction.text.strip()
+                tips.append(f"{match} ➜ {tip}")
         return tips
     except Exception as e:
-        print("❌ Forebet error:", e)
+        print(f"Forebet error: {e}")
         return []
 
-# === SUREBET ===
-def get_surebet_predictions():
-    print("🔍 Fetching from SureBet...")
+def get_predictz_predictions():
+    print("Fetching from PredictZ...")
+    url = 'https://www.predictz.com/predictions/'
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        url = "https://www.surebet.com.ng/predictions/today"
-        response = requests.get(url)
+        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
+        rows = soup.select('div.hrow')
         tips = []
-        rows = soup.select("div.prediction-item")
         for row in rows[:5]:
-            try:
-                teams = row.select_one(".teams").text.strip()
-                market = row.select_one(".market").text.strip()
-                tips.append(f"{market} – {teams}")
-            except:
-                continue
-        print(f"✅ Got {len(tips)} tips from SureBet")
+            teams = row.select_one('div.hfixture')
+            tip = row.select_one('div.hpred')
+            if teams and tip:
+                match = teams.text.strip()
+                prediction = tip.text.strip()
+                tips.append(f"{match} ➜ {prediction}")
         return tips
     except Exception as e:
-        print("❌ SureBet error:", e)
+        print(f"PredictZ error: {e}")
         return []
 
-# === SOCCERSITE ===
-def get_soccersite_predictions():
-    print("🔍 Fetching from SoccerSite...")
+def get_windrawwin_predictions():
+    print("Fetching from Windrawwin...")
+    url = 'https://www.windrawwin.com/todays-tips/'
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        url = "https://www.soccersite.net/sure-predictions"
-        response = requests.get(url)
+        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
+        rows = soup.select('div.tiprow')
         tips = []
-        rows = soup.select("table tr")[1:6]
-        for row in rows:
-            cols = row.find_all("td")
-            if len(cols) >= 3:
-                match = cols[0].text.strip()
-                prediction = cols[2].text.strip()
-                tips.append(f"{prediction} – {match}")
-        print(f"✅ Got {len(tips)} tips from SoccerSite")
+        for row in rows[:5]:
+            teams = row.select_one('div.tipt')
+            tip = row.select_one('div.tip')
+            if teams and tip:
+                match = teams.text.strip()
+                prediction = tip.text.strip()
+                tips.append(f"{match} ➜ {prediction}")
         return tips
     except Exception as e:
-        print("❌ SoccerSite error:", e)
+        print(f"Windrawwin error: {e}")
         return []
 
-# === EAGLEPREDICT ===
-def get_eaglepredict_predictions():
-    print("🔍 Fetching from EaglePredict...")
-    try:
-        url = "https://eaglepredict.com/predictions"
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        tips = []
-        matches = soup.select("div.prediction")
-        for match in matches[:5]:
-            try:
-                teams = match.select_one(".teams").text.strip()
-                tip = match.select_one(".tip").text.strip()
-                tips.append(f"{tip} – {teams}")
-            except:
-                continue
-        print(f"✅ Got {len(tips)} tips from EaglePredict")
-        return tips
-    except Exception as e:
-        print("❌ EaglePredict error:", e)
-        return []
-
-# === COMBINED ===
 def get_all_predictions():
-    tips = []
-    tips += get_forebet_predictions()
-    tips += get_surebet_predictions()
-    tips += get_soccersite_predictions()
-    tips += get_eaglepredict_predictions()
-    return tips 
+    all_tips = []
+    all_tips.extend(get_forebet_predictions())
+    all_tips.extend(get_predictz_predictions())
+    all_tips.extend(get_windrawwin_predictions())
+    return all_tips 
